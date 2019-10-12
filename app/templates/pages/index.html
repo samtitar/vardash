@@ -1,0 +1,164 @@
+{% set texts = [] %}
+{% set plots = [] %}
+<nav class="navbar navbar-primary bg-primary">
+    <div class="navbar-name">
+        {{ dashboard.name.lower() }}
+    </div>
+</nav>
+
+<div class="content">
+    <div class="container-fluid">
+        {% for row in dashboard.layout %}
+            <div class="row mt-5">
+                {% for col in row %}
+                    {% set variables = col['var_index'] %}
+                    {% set display  = col['type'] %}
+
+                    {% if col['width'] == 0 %}
+                        <div class="col-sm">
+                    {% else %}
+                        <div class="col-sm-{{ col['width'] }}">
+                    {% endif %}
+                        <div class="card" style="background: {{ col['background'] }}">
+                            <div class="card-body">
+                                <h6 class="card-subtitle" style="color: {{ col['color'] }}; font-weight: bold;">
+                                    {% for variable in variables %}
+                                        {{ dashboard.vars[variable]['name'].upper() }}
+                                    {% endfor %}
+                                </h6>
+                                {% if display == 'text' %}
+                                    {{ texts.append(col) | default("", True) }}
+                                    <span id="{{ col['name'] }}" class="mt-2"></span>
+                                {% elif display == 'plot' %}
+                                    {{ plots.append(col) | default("", True) }}
+                                    <div id="{{ col['name'] }}"></div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+const interval = 1000;
+
+var variables = [];
+
+var plot_intervals = [];
+var text_intervals = [];
+
+var plots = {{ plots | tojson }};
+var texts = {{ texts | tojson }};
+
+var var_interval = setInterval(function() {
+    $.get(window.location.pathname + "/vars", function(data) {
+        variables = data;
+    });
+}, interval)
+
+// Initialize plots
+for (i = 0; i < plots.length; i++) {
+    var plot = plots[i];
+    var plot_config = plot['config'];
+    var var_index = plot['var_index'];
+
+    var data = []
+
+    for (j = 0; j < var_index.length; j++) {
+        data.push({
+            x: [],
+            y: [],
+            mode: 'lines',
+            line: { color: '#ededf8' }
+        });
+    }
+
+    var layout = {
+        showlegend: false,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        margin: { t: 30, r: 0, b: 10, l: 30 },
+        xaxis: { showgrid: false, showticklabels: false },
+        yaxis: {
+            showgrid: false,
+            tickfont: {
+                color: plot['color'],
+                size: 18
+            }
+        }
+    }
+
+    Plotly.plot(plot['name'], data, layout);
+
+    plot_intervals.push(setInterval(function(a, b) {
+        update_plot(a, b)
+    }, interval, plot, var_index));
+}
+
+// Initialize text displays
+for (i = 0; i < texts.length; i++) {
+    var text = texts[i];
+    var var_index = text['var_index']
+
+    setInterval(function(a, b) {
+        update_text(a, b);
+    }, interval, text, var_index);
+}
+
+// Update plot values
+function update_plot(Plot, VariableIndex) {
+    if (variables.length > 0) {
+        var y_vals = [];
+        var x_vals = [];
+        var traces_unpacked = [];
+
+        var time = new Date();
+
+        for (i = 0; i < VariableIndex.length; i++) {
+            variable = VariableIndex[i];
+            y_vals.push([variables[variable]['value']]);
+            x_vals.push([time]);
+            traces_unpacked.push(i)
+        }
+
+        var update = {
+            x: x_vals,
+            y: y_vals
+        }
+
+        var olderTime = time.setMinutes(time.getMinutes() - 1);
+        var futureTime = time.setMinutes(time.getMinutes() + 1);
+
+        var minuteView = {
+            xaxis: {
+                type: 'date',
+                range: [olderTime, futureTime],
+                showgrid: false,
+                showticklabels: false
+            },
+            yaxis: {
+                showgrid: false,
+                tickfont: {
+                    color: Plot['color'],
+                    size: 18
+                }
+            }
+        };
+
+        Plotly.relayout(Plot['name'], minuteView);
+        Plotly.extendTraces(Plot['name'], update, traces_unpacked)
+    }
+}
+
+// Update text display values
+function update_text(Text, VariableIndex) {
+    if (variables.length > 0) {
+        var new_val = variables[VariableIndex]['value'];
+
+        $("#" + Text['name']).text(new_val);
+    }
+}
+</script>

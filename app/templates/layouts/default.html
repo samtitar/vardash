@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+        <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Varela+Round&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="/static/assets/css/font-awesome.min.css">
+        <link rel="stylesheet" href="/static/assets/css/bootstrap.min.css">
+
+        <link rel="stylesheet" href="/static/assets/css/vardash.css">
+
+        {% include 'includes/scripts.html' %}
+        <title>VARDASH</title>
+    </head>
+
+    <body>
+        <div class="wrapper">
+            <div class="sidebar">
+                <div class="siderbar sidebar-header">
+                    vardash
+                </div>
+            </div>
+
+            <!-- Page Content -->
+            <div class="main-panel">
+                {% with name=name, schools=schools, templates=templates %}
+                    {{ content | safe }}
+                {% endwith %}
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,28 @@
+<script src="static/assets/js/jquery.min.js"></script>
+<script src="static/assets/js/bootstrap.min.js"></script>
+
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+function getUrlVars() {
+    var vars = {};
+    var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+        vars[key] = value;
+    });
+
+    return vars;
+}
+
+$(document).ready(function() {
+    school_id = getUrlVars()['id']
+    school_year = getUrlVars()['year']
+
+    $("#sidebar").find(".active").removeClass("active");
+    $("#" + school_id).addClass("active");
+
+    if (school_year != undefined) {
+        $("#navbar").find(".active").removeClass("active");
+        $("#" + school_year).addClass("active");
+    }
+});
+</script>
