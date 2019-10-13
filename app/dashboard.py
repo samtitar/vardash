@@ -26,6 +26,7 @@ class Dashboard():
         self.token = _token
         self.name = Name
         self.vars = []
+        self.arrs = []
         self.layout = [
             [
                 {
@@ -140,6 +141,31 @@ class Dashboard():
         for variable in self.get_vars():
             if variable['name'] == VarName:
                 result = variable
+                break
+        
+        return result
+    
+    def add_arr(self, Name, Type):
+        self.arrs.append({'type': Type, 'name': Name, 'value': []})
+    
+    def set_arr_value(self, ArrName, Value):
+        array = self.get_arr(ArrName)
+        array_index = self.get_arrs().index(array)
+
+        array['value'] = Value
+
+        self.arrs[array_index] = array
+
+        return 1
+    
+    def get_arrs(self):
+        return self.arrs
+    
+    def get_arr(self, ArrName):
+        result = None
+        for array in self.get_arrs():
+            if array['name'] == ArrName:
+                result = array
                 break
         
         return result
