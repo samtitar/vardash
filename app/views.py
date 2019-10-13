@@ -24,6 +24,16 @@ def get_vars(dash_id):
 
     return jsonify(dashboard.get_vars())
 
+@app.route('/<dash_id>/arrs', methods=['GET'])
+def get_arrs(dash_id):
+    dashboard = dash_manager.get_dashboard_by_id(dash_id)
+
+    if dashboard is None:
+        return render_template('layouts/default.html',
+            content=render_template('pages/not_found.html', dash_id=dash_id))
+
+    return jsonify(dashboard.get_arrs())
+
 @app.route('/<dash_id>/vars/<var_name>', methods=['GET'])
 def get_var(dash_id, var_name):
     dashboard = dash_manager.get_dashboard_by_id(dash_id)
@@ -64,4 +74,4 @@ dash.add_var('var2', 'num')
 dash.add_var('var3', 'str')
 dash.add_var('var4', 'str')
 dash.add_arr('arr1', 'num')
-dash.set_arr_value('arr1', [0, 1, 2, 3, 4, 5, 6, 7])
+dash.set_arr_value('arr1', [0, 1, 2, 3, 4])

@@ -114,6 +114,20 @@ class Dashboard():
                         }
                     }
                 }
+            ],
+            [
+                {
+                    "type": "plot",
+                    "name": "plot4",
+                    "background": "#23255c",
+                    "color": "#fff",
+                    "var_index": [0],
+                    "width": 6,
+                    "config": {
+                        "height": 250,
+                        "mode": "bar"
+                    }
+                }
             ]
         ]
     
