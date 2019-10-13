@@ -27,63 +27,94 @@ class Dashboard():
         self.name = Name
         self.vars = []
         self.layout = [
-                [
-                    {
-                        "type": "text",
-                        "name": "text1",
-                        "background": "#fff",
-                        "color": "#999",
-                        "var_index": [0],
-                        "width": 0
-                    },
-                    {
-                        "type": "text",
-                        "name": "text2",
-                        "background": "#fff",
-                        "color": "#999",
-                        "var_index": [1],
-                        "width": 0
-                    },
-                    {
-                        "type": "text",
-                        "name": "text3",
-                        "background": "#fff",
-                        "color": "#999",
-                        "var_index": [2],
-                        "width": 0
-                    },
-                    {
-                        "type": "text",
-                        "name": "text4",
-                        "background": "#fff",
-                        "color": "#999",
-                        "var_index": [3],
-                        "width": 0
+            [
+                {
+                    "type": "text",
+                    "name": "text1",
+                    "background": "#fff",
+                    "color": "#999",
+                    "var_index": [0],
+                    "width": 0
+                },
+                {
+                    "type": "text",
+                    "name": "text2",
+                    "background": "#fff",
+                    "color": "#999",
+                    "var_index": [1],
+                    "width": 0
+                },
+                {
+                    "type": "text",
+                    "name": "text3",
+                    "background": "#fff",
+                    "color": "#999",
+                    "var_index": [2],
+                    "width": 0
+                },
+                {
+                    "type": "text",
+                    "name": "text4",
+                    "background": "#fff",
+                    "color": "#999",
+                    "var_index": [3],
+                    "width": 0
+                }
+            ],
+            [
+                {
+                    "type": "plot",
+                    "name": "plot1",
+                    "background": "#23255c",
+                    "color": "#fff",
+                    "var_index": [0, 1],
+                    "width": 4,
+                    "config": {
+                        "height": 300,
+                        "mode": "lines",
+                        "line": { "color": "#ededf8" }
                     }
-                ],
-                [
-                    {
-                        "type": "plot",
-                        "name": "plot1",
-                        "background": "#23255c",
-                        "color": "#fff",
-                        "var_index": [0, 1],
-                        "width": 8,
-                        "config": {
-                        }
-                    },
-                    {
-                        "type": "plot",
-                        "name": "plot2",
-                        "background": "#23255c",
-                        "color": "#fff",
-                        "var_index": [1],
-                        "width": 4,
-                        "config": {
+                },
+                {
+                    "type": "plot",
+                    "name": "plot2",
+                    "background": "#23255c",
+                    "color": "#fff",
+                    "var_index": [2],
+                    "width": 4,
+                    "config": {
+                        "height": 300,
+                        "mode": "gauge+number",
+                        "domain": { "x": [0, 1], "y": [0, 1] },
+                        "gauge": {
+                            "axis": { "range": [0, 100] },
+                            "bar": { "color": "#fff" },
+                            "borderwidth": 1,
+                            "bordercolor": "#fff",
                         }
                     }
-                ]
+                },
+                {
+                    "type": "plot",
+                    "name": "plot3",
+                    "background": "#23255c",
+                    "color": "#fff",
+                    "var_index": [3],
+                    "width": 4,
+                    "config": {
+                        "height": 300,
+                        "mode": "gauge+number",
+                        "domain": { "x": [0, 1], "y": [0, 1] },
+                        "gauge": {
+                            "axis": { "range": [0, 100] },
+                            "bar": { "color": "#fff" },
+                            "borderwidth": 1,
+                            "bordercolor": "#fff",
+                        }
+                    }
+                }
             ]
+        ]
     
     def set_id(self, ID):
         self.id = ID
