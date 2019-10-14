@@ -118,9 +118,10 @@ $(window).ready(function() {
             }
         } else if (plot_config['mode'] == 'bar') {
             data.push({
-                x: ['a', 'b', 'c', 'd', 'e'],
+                x: [],
                 y: [],
                 type: "bar",
+                orientation: "v",
                 marker: {
                     color: plot['color']
                 }
@@ -131,7 +132,7 @@ $(window).ready(function() {
                 paper_bgcolor: 'rgba(0,0,0,0)',
                 plot_bgcolor: 'rgba(0,0,0,0)',
                 height: plot['config']['height'],
-                margin: { t: 0, r: 50, b: 0, l: 50 },
+                margin: { t: 10, r: 20, b: 10, l: 20 },
                 xaxis: { showgrid: false, showticklabels: false },
                 yaxis: {
                     showgrid: false,
@@ -206,10 +207,11 @@ $(window).ready(function() {
             }
         } else if (PlotMode.includes('gauge')) {
             variable = VariableIndex[0];
-            Plotly.update(Plot['name'], { "value": variables[variable]['value'] })
+            Plotly.restyle(Plot['name'], "value", variables[variable]['value'])
         } else if (PlotMode == 'bar') {
             variable = VariableIndex[0];
-            Plotly.update(Plot['name'], { y: arrays[variable]['value'] })            
+            Plotly.restyle(Plot['name'], 'x', arrays[variable]['labels']);
+            Plotly.restyle(Plot['name'], 'y', arrays[variable]['value']);
         }
     }
 

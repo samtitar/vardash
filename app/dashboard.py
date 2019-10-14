@@ -68,7 +68,7 @@ class Dashboard():
                     "name": "plot1",
                     "background": "#23255c",
                     "color": "#fff",
-                    "var_index": [0, 1],
+                    "var_index": [1],
                     "width": 4,
                     "config": {
                         "height": 300,
@@ -98,36 +98,30 @@ class Dashboard():
                 {
                     "type": "plot",
                     "name": "plot3",
-                    "background": "#23255c",
-                    "color": "#fff",
-                    "var_index": [3],
+                    "background": "#fff",
+                    "color": "#23255c",
+                    "var_index": [0],
                     "width": 4,
                     "config": {
                         "height": 300,
-                        "mode": "gauge+number",
-                        "domain": { "x": [0, 1], "y": [0, 1] },
-                        "gauge": {
-                            "axis": { "range": [0, 100] },
-                            "bar": { "color": "#fff" },
-                            "borderwidth": 1,
-                            "bordercolor": "#fff",
-                        }
+                        "mode": "bar"
                     }
-                }
+                },
             ],
             [
                 {
                     "type": "plot",
                     "name": "plot4",
-                    "background": "#23255c",
-                    "color": "#fff",
-                    "var_index": [0],
-                    "width": 6,
+                    "background": "#fff",
+                    "color": "#23255c",
+                    "var_index": [3],
+                    "width": 12,
                     "config": {
                         "height": 250,
-                        "mode": "bar"
+                        "mode": "lines",
+                        "line": { "color": "#23255c" }
                     }
-                }
+                },
             ]
         ]
     
@@ -160,13 +154,23 @@ class Dashboard():
         return result
     
     def add_arr(self, Name, Type):
-        self.arrs.append({'type': Type, 'name': Name, 'value': []})
+        self.arrs.append({'type': Type, 'name': Name, 'value': [], 'labels': []})
     
     def set_arr_value(self, ArrName, Value):
         array = self.get_arr(ArrName)
         array_index = self.get_arrs().index(array)
 
         array['value'] = Value
+
+        self.arrs[array_index] = array
+
+        return 1
+
+    def set_arr_labels(self, ArrName, Labels):
+        array = self.get_arr(ArrName)
+        array_index = self.get_arrs().index(array)
+
+        array['labels'] = Labels
 
         self.arrs[array_index] = array
 

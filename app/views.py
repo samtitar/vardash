@@ -64,6 +64,37 @@ def set_var(dash_id, var_name, new_value):
 
     return jsonify(1)
 
+
+@app.route('/<dash_id>/arrs/<arr_name>/<new_value>', methods=['GET'])
+def set_arr_value(dash_id, arr_name, new_value):
+    dashboard = dash_manager.get_dashboard_by_id(dash_id)
+
+    if dashboard is None:
+        return render_template('layouts/default.html',
+            content=render_template('pages/not_found.html', dash_id=dash_id))
+    
+    result = dashboard.set_arr_value(arr_name, new_value)
+
+    if result == 0:
+        return jsonify(0)
+
+    return jsonify(1)
+
+@app.route('/<dash_id>/arrs/<arr_name>/label/<new_labels>', methods=['GET'])
+def set_arr_labels(dash_id, arr_name, new_labels):
+    dashboard = dash_manager.get_dashboard_by_id(dash_id)
+
+    if dashboard is None:
+        return render_template('layouts/default.html',
+            content=render_template('pages/not_found.html', dash_id=dash_id))
+    
+    result = dashboard.set_arr_labels(arr_name, new_labels)
+
+    if result == 0:
+        return jsonify(0)
+
+    return jsonify(1)
+
 dash_manager = DashboardManager()
 d_id, d_token = dash_manager.add_dashboard('Dashboard 1')
 
@@ -75,3 +106,4 @@ dash.add_var('var3', 'str')
 dash.add_var('var4', 'str')
 dash.add_arr('arr1', 'num')
 dash.set_arr_value('arr1', [0, 1, 2, 3, 4])
+dash.set_arr_labels('arr1', ['a', 'b', 'c', 'd', 'e'])
