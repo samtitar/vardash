@@ -90,7 +90,7 @@ class Dashboard():
                         "gauge": {
                             "axis": { "range": [0, 100] },
                             "bar": { "color": "#fff" },
-                            "borderwidth": 1,
+                            "borderwidth": 0,
                             "bordercolor": "#fff",
                         }
                     }

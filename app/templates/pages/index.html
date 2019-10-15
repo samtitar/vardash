@@ -118,8 +118,8 @@ $(window).ready(function() {
             }
         } else if (plot_config['mode'] == 'bar') {
             data.push({
-                x: [],
-                y: [],
+                x: ['a'],
+                y: [0],
                 type: "bar",
                 orientation: "v",
                 marker: {
@@ -210,8 +210,35 @@ $(window).ready(function() {
             Plotly.restyle(Plot['name'], "value", variables[variable]['value'])
         } else if (PlotMode == 'bar') {
             variable = VariableIndex[0];
-            Plotly.restyle(Plot['name'], 'x', arrays[variable]['labels']);
-            Plotly.restyle(Plot['name'], 'y', arrays[variable]['value']);
+
+            data = [{
+                x: arrays[variable]['labels'],
+                y: arrays[variable]['values'],
+                type: "bar",
+                orientation: "v",
+                marker: {
+                    color: plot['color']
+                }
+            }];
+
+            layout = {
+                showlegend: false,
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                height: plot['config']['height'],
+                margin: { t: 10, r: 20, b: 10, l: 20 },
+                xaxis: { showgrid: false, showticklabels: false },
+                yaxis: {
+                    showgrid: false,
+                    tickfont: {
+                        color: plot['color'],
+                        size: 18
+                    }
+                }
+            }
+
+            Plotly.restyle(plot['name'], 'x', arrays[variable]['labels']);
+            Plotly.restyle(plot['name'], 'y', arrays[variable]['values']);
         }
     }
 
