@@ -68,7 +68,7 @@ class Dashboard():
                     "name": "plot1",
                     "background": "#23255c",
                     "color": "#fff",
-                    "var_index": [1],
+                    "var_index": [1,3],
                     "width": 4,
                     "config": {
                         "height": 300,
@@ -119,7 +119,7 @@ class Dashboard():
                     "config": {
                         "height": 250,
                         "mode": "lines",
-                        "line": { "color": "#23255c" }
+                        "line": { "color": "#23255c" },
                     }
                 },
             ]
@@ -153,8 +153,8 @@ class Dashboard():
         
         return result
     
-    def add_arr(self, Name, Type):
-        self.arrs.append({'type': Type, 'name': Name, 'value': [], 'labels': []})
+    def add_arr(self, Name):
+        self.arrs.append({'name': Name, 'value': [], 'labels': []})
     
     def set_arr_value(self, ArrName, Value):
         array = self.get_arr(ArrName)

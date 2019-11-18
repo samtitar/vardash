@@ -3,6 +3,8 @@ from flask import render_template, request, redirect, jsonify
 from app.dashboard import Dashboard, DashboardManager
 from app import app
 
+import json
+
 @app.route('/<dash_id>', methods=['GET'])
 def index(dash_id):
     dashboard = dash_manager.get_dashboard_by_id(dash_id)
@@ -94,15 +96,11 @@ def set_var(dash_id, var_name, new_value):
 def set_arr_value(dash_id, arr_name, new_value):
     dashboard = dash_manager.get_dashboard_by_id(dash_id)
 
+    new_value = json.loads(new_value)
+
     # Dashboard by id not found
     if dashboard is None:
         return jsonify(1)
-
-    # Invalid variable type
-    if dashboard.get_arr(arr_name)['type'] == 'num':
-        for val in new_value:
-            if not isinstance(val, int) or not isinstance(val, float):
-                return jsonify(2)
     
     # Length does not correspond
     if not len(new_value) is len(dashboard.get_arr(arr_name)['value']):
@@ -124,6 +122,9 @@ dash.add_var('var1', 'num')
 dash.add_var('var2', 'num')
 dash.add_var('var3', 'str')
 dash.add_var('var4', 'str')
-dash.add_arr('arr1', 'num')
+dash.add_arr('arr1')
 dash.set_arr_value('arr1', [0, 1, 2, 3, 4])
 dash.set_arr_labels('arr1', ['a', 'b', 'c', 'd', 'e'])
+
+dash.set_var_value('var2', 20)
+dash.set_var_value('var3', 10)
