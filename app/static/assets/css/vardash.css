@@ -59,6 +59,18 @@ p {
     margin-left: 250px;
 }
 
+.main-panel-fullscreen {
+    width: 100%;
+}
+
 .content {
     padding: 0 20px;
+}
+
+.text-display {
+    font-size: 2em;
+}
+
+.display-title {
+    font-weight: bold;
 }

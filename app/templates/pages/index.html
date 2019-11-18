@@ -21,14 +21,14 @@
                     {% endif %}
                         <div class="card" style="background: {{ col['background'] }}">
                             <div class="card-body">
-                                <h6 class="card-subtitle" style="color: {{ col['color'] }}; font-weight: bold;">
+                                <h6 class="card-subtitle display-title" style="color: {{ col['color'] }};">
                                     {% for variable in variables %}
                                         {{ dashboard.vars[variable]['name'].upper() }}
                                     {% endfor %}
                                 </h6>
                                 {% if display == 'text' %}
                                     {{ texts.append(col) | default("", True) }}
-                                    <span id="{{ col['name'] }}"></span>
+                                    <span id="{{ col['name'] }}" class="text-display" style="color: {{ col['color'] }};"></span>
                                 {% elif display == 'plot' %}
                                     {{ plots.append(col) | default("", True) }}
                                     <div id="{{ col['name'] }}"></div>

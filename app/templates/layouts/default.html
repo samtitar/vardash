@@ -18,18 +18,23 @@
 
     <body>
         <div class="wrapper">
-            <div class="sidebar">
-                <div class="siderbar sidebar-header">
-                    vardash
-                </div>
-            </div>
 
-            <!-- Page Content -->
-            <div class="main-panel">
-                {% with name=name, schools=schools, templates=templates %}
+            {% if not fullscreen %}
+                <div class="sidebar">
+                    <div class="siderbar sidebar-header">
+                        vardash
+                    </div>
+                </div>
+
+                <!-- Page Content -->
+                <div class="main-panel">
                     {{ content | safe }}
-                {% endwith %}
-            </div>
+                </div>
+            {% else %}
+                <div class="main-panel-fullscreen">
+                    {{ content | safe }}
+                </div>
+            {% endif %}
         </div>
     </body>
 </html>

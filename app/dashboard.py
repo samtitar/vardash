@@ -6,8 +6,8 @@ class DashboardManager():
     def __init__(self):
         self.dashboards = []
     
-    def add_dashboard(self, Name):
-        dashboard = Dashboard(Name)
+    def add_dashboard(self, Name, Layout):
+        dashboard = Dashboard(Name, Layout)
         self.dashboards.append(dashboard)
         return dashboard.id, dashboard.token
     
@@ -20,110 +20,14 @@ class DashboardManager():
         return result
 
 class Dashboard():
-    def __init__(self, Name):
+    def __init__(self, Name, Layout):
         _id, _token = random_string(), random_string(N=64)
         self.id = _id
         self.token = _token
         self.name = Name
         self.vars = []
         self.arrs = []
-        self.layout = [
-            [
-                {
-                    "type": "text",
-                    "name": "text1",
-                    "background": "#fff",
-                    "color": "#999",
-                    "var_index": [0],
-                    "width": 0
-                },
-                {
-                    "type": "text",
-                    "name": "text2",
-                    "background": "#fff",
-                    "color": "#999",
-                    "var_index": [1],
-                    "width": 0
-                },
-                {
-                    "type": "text",
-                    "name": "text3",
-                    "background": "#fff",
-                    "color": "#999",
-                    "var_index": [2],
-                    "width": 0
-                },
-                {
-                    "type": "text",
-                    "name": "text4",
-                    "background": "#fff",
-                    "color": "#999",
-                    "var_index": [3],
-                    "width": 0
-                }
-            ],
-            [
-                {
-                    "type": "plot",
-                    "name": "plot1",
-                    "background": "#23255c",
-                    "color": "#fff",
-                    "var_index": [1,3],
-                    "width": 4,
-                    "config": {
-                        "height": 300,
-                        "mode": "lines",
-                        "line": { "color": "#ededf8" }
-                    }
-                },
-                {
-                    "type": "plot",
-                    "name": "plot2",
-                    "background": "#23255c",
-                    "color": "#fff",
-                    "var_index": [2],
-                    "width": 4,
-                    "config": {
-                        "height": 300,
-                        "mode": "gauge+number",
-                        "domain": { "x": [0, 1], "y": [0, 1] },
-                        "gauge": {
-                            "axis": { "range": [0, 100] },
-                            "bar": { "color": "#fff" },
-                            "borderwidth": 0,
-                            "bordercolor": "#fff",
-                        }
-                    }
-                },
-                {
-                    "type": "plot",
-                    "name": "plot3",
-                    "background": "#fff",
-                    "color": "#23255c",
-                    "var_index": [0],
-                    "width": 4,
-                    "config": {
-                        "height": 300,
-                        "mode": "bar"
-                    }
-                },
-            ],
-            [
-                {
-                    "type": "plot",
-                    "name": "plot4",
-                    "background": "#fff",
-                    "color": "#23255c",
-                    "var_index": [3],
-                    "width": 12,
-                    "config": {
-                        "height": 250,
-                        "mode": "lines",
-                        "line": { "color": "#23255c" },
-                    }
-                },
-            ]
-        ]
+        self.layout = Layout
     
     def set_id(self, ID):
         self.id = ID
