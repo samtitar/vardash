@@ -44,6 +44,8 @@
 
 <script>
 const interval = 100;
+const max_width = 12;
+const width_scale = 300;
 
 var variables = [];
 var arrays = [];
@@ -54,201 +56,170 @@ var text_intervals = [];
 var plots = {{ plots | tojson }};
 var texts = {{ texts | tojson }};
 
-var var_interval = setInterval(function() {
+var vars_loaded = false;
+var arrs_loaded = false;
+
+var count = 0;
+
+var data_interval = setInterval(function() {
     $.get(window.location.pathname + "/vars", function(data) {
         variables = data;
+        vars_loaded = true;
     });
 
     $.get(window.location.pathname + "/arrs", function(data) {
         arrays = data;
+        arrs_loaded = true;
     });
 }, interval)
 
+const sleep = (milliseconds) => {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
 $(window).ready(function() {
-    // Initialize plots
-    for (i = 0; i < plots.length; i++) {
-        var plot = plots[i];
-        var plot_config = plot['config'];
-        var var_index = plot['var_index'];
+    sleep(1000).then(() => {
+        // Initialize plots
+        for (i = 0; i < plots.length; i++) {
+            var plot = plots[i];
+            var plot_config = plot['config'];
+            var var_index = plot['var_index'];
 
-        var data = []
-        var layout = {}
+            var data = []
+            var layout = {}
 
-        if (plot_config['mode'] == 'lines') {
-            for (j = 0; j < var_index.length; j++) {
-                data.push({
-                    x: [],
-                    y: [],
-                    mode: 'lines',
-                    line: plot_config['line']
-                });
-            }
+            plot['count'] = 0;
 
-            layout = {
-                showlegend: false,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                height: plot_config['height'],
-                margin: { t: 30, r: 0, b: 10, l: 30 },
-                xaxis: { showgrid: false, showticklabels: false },
-                yaxis: {
-                    showgrid: false,
-                    tickfont: {
-                        color: plot['color'],
-                        size: 18
-                    }
-                }
-            }
-        } else if (plot_config['mode'].includes('gauge')) {
-            data.push({
-                domain: plot_config['domain'],
-                value: 0,
-                type: "indicator",
-                mode: plot_config['mode'],
-                gauge: plot_config['gauge']
-            });
-
-            layout = {
-                showlegend: false,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                height: plot['config']['height'],
-                margin: { t: 0, r: 50, b: 0, l: 50 },
-                font: { color: plot['color'], size: 15 }
-            }
-        } else if (plot_config['mode'] == 'bar') {
-            data.push({
-                x: ['a'],
-                y: [0],
-                type: "bar",
-                orientation: "v",
-                marker: {
-                    color: plot['color']
-                }
-            });
-
-            layout = {
-                showlegend: false,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                height: plot['config']['height'],
-                margin: { t: 10, r: 20, b: 10, l: 20 },
-                xaxis: { showgrid: false, showticklabels: false },
-                yaxis: {
-                    showgrid: false,
-                    tickfont: {
-                        color: plot['color'],
-                        size: 18
-                    }
-                }
-            }
-        }
-
-        Plotly.plot(plot['name'], data, layout);
-
-        plot_intervals.push(setInterval(function(a, b, c) {
-            update_plot(a, b, c)
-        }, interval, plot_config['mode'], plot, var_index));
-    }
-
-    // Initialize text displays
-    for (i = 0; i < texts.length; i++) {
-        var text = texts[i];
-        var var_index = text['var_index'] 
-
-        setInterval(function(a, b) {
-            update_text(a, b);
-        }, interval, text, var_index);
-    }
-
-    // Update plot values
-    function update_plot(PlotMode, Plot, VariableIndex) {
-        if (PlotMode == 'lines') {
-            if (variables.length > 0) {
-                var y_vals = [];
-                var x_vals = [];
-                var traces_unpacked = [];
-
-                var time = new Date();
-
-                for (i = 0; i < VariableIndex.length; i++) {
-                    variable = VariableIndex[i];
-                    y_vals.push([variables[variable]['value']]);
-                    x_vals.push([time]);
-                    traces_unpacked.push(i)
+            if (plot_config['mode'] == 'lines') {
+                for (j = 0; j < var_index.length; j++) {
+                    data.push({
+                        y: [variables[var_index[j]]['value']],
+                        mode: 'lines',
+                        line: plot_config['line']
+                    });
                 }
 
-                var update = {
-                    x: x_vals,
-                    y: y_vals
-                }
+                plot_width = (plot['width'] / max_width) * width_scale;
 
-                var olderTime = time.setMinutes(time.getMinutes() - 1);
-                var futureTime = time.setMinutes(time.getMinutes() + 1);
-
-                var minuteView = {
-                    xaxis: {
-                        type: 'date',
-                        range: [olderTime, futureTime],
-                        showgrid: false,
-                        showticklabels: false
-                    },
+                layout = {
+                    showlegend: false,
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    height: plot_config['height'],
+                    margin: { t: 30, r: 0, b: 10, l: 30 },
+                    xaxis: { showgrid: false, showticklabels: false, range: [0, plot_width] },
                     yaxis: {
                         showgrid: false,
                         tickfont: {
-                            color: Plot['color'],
+                            color: plot['color'],
                             size: 18
                         }
                     }
-                };
-
-                Plotly.relayout(Plot['name'], minuteView);
-                Plotly.extendTraces(Plot['name'], update, traces_unpacked)
-            }
-        } else if (PlotMode.includes('gauge')) {
-            variable = VariableIndex[0];
-            Plotly.restyle(Plot['name'], "value", variables[variable]['value'])
-        } else if (PlotMode == 'bar') {
-            variable = VariableIndex[0];
-
-            data = [{
-                x: arrays[variable]['labels'],
-                y: arrays[variable]['values'],
-                type: "bar",
-                orientation: "v",
-                marker: {
-                    color: plot['color']
                 }
-            }];
+            } else if (plot_config['mode'].includes('gauge')) {
+                data.push({
+                    domain: plot_config['domain'],
+                    value: variables[var_index[0]]['value'],
+                    type: "indicator",
+                    mode: plot_config['mode'],
+                    gauge: plot_config['gauge']
+                });
 
-            layout = {
-                showlegend: false,
-                paper_bgcolor: 'rgba(0,0,0,0)',
-                plot_bgcolor: 'rgba(0,0,0,0)',
-                height: plot['config']['height'],
-                margin: { t: 10, r: 20, b: 10, l: 20 },
-                xaxis: { showgrid: false, showticklabels: false },
-                yaxis: {
-                    showgrid: false,
-                    tickfont: {
-                        color: plot['color'],
-                        size: 18
+                layout = {
+                    showlegend: false,
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    height: plot['config']['height'],
+                    margin: { t: 0, r: 50, b: 0, l: 50 },
+                    font: { color: plot['color'], size: 20 }
+                }
+            } else if (plot_config['mode'] == 'bar') {
+                data.push({
+                    x: arrays[var_index[0]]['labels'],
+                    y: arrays[var_index[0]]['value'],
+                    type: "bar",
+                    orientation: "v",
+                    marker: {
+                        color: plot['color']
+                    }
+                });
+
+                layout = {
+                    showlegend: false,
+                    paper_bgcolor: 'rgba(0,0,0,0)',
+                    plot_bgcolor: 'rgba(0,0,0,0)',
+                    height: plot['config']['height'],
+                    margin: { t: 10, r: 20, b: 40, l: 40 },
+                    xaxis: { showgrid: false },
+                    yaxis: {
+                        showgrid: false,
+                        tickfont: {
+                            color: plot['color'],
+                            size: 18
+                        }
+                    },
+                    font: { color: plot['color'], size: 15 }
+                }
+            }
+
+            Plotly.plot(plot['name'], data, layout);
+
+            plot_intervals.push(setInterval(function(a, b, c) {
+                update_plot(a, b, c)
+            }, interval, plot_config['mode'], plot, var_index));
+
+            plot = null;
+        }
+
+        // Initialize text displays
+        for (i = 0; i < texts.length; i++) {
+            var text = texts[i];
+            var var_index = text['var_index'] 
+
+            setInterval(function(a, b) {
+                update_text(a, b);
+            }, interval, text, var_index);
+        }
+
+        // Update plot values
+        function update_plot(PlotMode, Plot, VariableIndex) {
+            if (PlotMode == 'lines') {
+                Plot['count']++;
+                if (variables.length > 0) {
+                    var y_vals = [];
+                    var traces = [];
+
+                    for (i = 0; i < VariableIndex.length; i++) {
+                        variable = VariableIndex[i];
+                        y_vals.push([variables[variable]['value']]);
+                        traces.push(i);
+                    }
+                    
+                    Plotly.extendTraces(Plot['name'], { y: y_vals }, traces);
+
+                    plot_width = (Plot['width'] / max_width) * width_scale;
+                    if (Plot['count'] > plot_width) {
+                        Plotly.relayout(Plot['name'], { 'xaxis.range': [Plot['count'] - plot_width, Plot['count']] });
                     }
                 }
+            } else if (PlotMode.includes('gauge')) {
+                variable = VariableIndex[0];
+                Plotly.restyle(Plot['name'], "value", variables[variable]['value'])
+            } else if (PlotMode == 'bar') {
+                variable = VariableIndex[0];
+
+                Plotly.restyle(Plot['name'], 'y', [arrays[variable]['value']]);
             }
-
-            Plotly.restyle(plot['name'], 'x', arrays[variable]['labels']);
-            Plotly.restyle(plot['name'], 'y', arrays[variable]['values']);
         }
-    }
 
-    // Update text display values
-    function update_text(Text, VariableIndex) {
-        if (variables.length > 0) {
-            var new_val = variables[VariableIndex]['value'];
+        // Update text display values
+        function update_text(Text, VariableIndex) {
+            if (variables.length > 0) {
+                var new_val = variables[VariableIndex]['value'];
 
-            $("#" + Text['name']).text(new_val);
+                $("#" + Text['name']).text(new_val);
+            }
         }
-    }
+    });
 });
 </script>
