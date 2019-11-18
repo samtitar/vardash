@@ -52,6 +52,23 @@ def get_var(dash_id, var_name):
 
     return jsonify(variable)
 
+
+@app.route('/<dash_id>/arrs/<arr_name>', methods=['GET'])
+def get_arr(dash_id, arr_name):
+    dashboard = dash_manager.get_dashboard_by_id(dash_id)
+
+    # Dashboard by id not found
+    if dashboard is None:
+        return jsonify(1)
+
+    array = dashboard.get_arr(arr_name)
+
+    # Variable not found
+    if array == None:
+        return jsonify(2)
+
+    return jsonify(array)
+
 @app.route('/<dash_id>/vars/<var_name>/<new_value>', methods=['GET'])
 def set_var(dash_id, var_name, new_value):
     dashboard = dash_manager.get_dashboard_by_id(dash_id)
@@ -62,8 +79,7 @@ def set_var(dash_id, var_name, new_value):
     
     # Invalid variable type
     if dashboard.get_var(var_name)['type'] == 'num':
-        if not isinstance(new_value, int) or not isinstance(new_value, float):
-            return jsonify(2)
+        new_value = int(new_value)
 
     result = dashboard.set_var_value(var_name, new_value)
 
